@@ -1,0 +1,38 @@
+name: Deploy Review Dashboard
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-size: 20
+
+      - name: Install Dependencies
+        run: |
+          cd dashboard
+          npm ci
+
+      - name: Build Dashboard
+        run: |
+          cd dashboard
+          npm run build
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: dashboard/dist
+          branch: gh-pages
