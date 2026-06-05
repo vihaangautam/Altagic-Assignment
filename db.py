@@ -140,6 +140,7 @@ def update_prospect_scores(domain, score_data):
     conn = get_db_connection()
     cursor = conn.cursor()
     
+    status = score_data.get('status', 'scored')
     try:
         cursor.execute("""
             UPDATE prospects
@@ -148,7 +149,7 @@ def update_prospect_scores(domain, score_data):
                 why_relevant = ?,
                 outreach_angle = ?,
                 category = ?,
-                status = 'scored',
+                status = ?,
                 updated_at = ?
             WHERE domain = ?
         """, (
@@ -157,6 +158,7 @@ def update_prospect_scores(domain, score_data):
             score_data.get('why_relevant', ''),
             score_data.get('outreach_angle', ''),
             score_data.get('category', 'SEO/Marketing'),
+            status,
             datetime.now().isoformat(),
             domain
         ))

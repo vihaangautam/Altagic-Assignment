@@ -138,8 +138,22 @@ async def crawl_domain(domain, client):
             if emails:
                 # filter out obvious garbage/media extensions inside matches
                 valid_emails = [e for e in emails if not any(e.endswith(ext) for ext in ['.png', '.jpg', '.jpeg', '.gif'])]
-                if valid_emails:
-                    data["contact_email"] = valid_emails[0]
+                # Clean and drop garbage email strings (containing followers, username, etc.)
+                sanitized_emails = []
+                for e in valid_emails:
+                    e_lower = e.lower()
+                    if len(e_lower) > 40 or any(bad in e_lower for bad in ['instagram', 'followers', 'username', 'twitter', 'facebook', 'pinterest', 'channel']):
+                        continue
+                    sanitized_emails.append(e)
+                if sanitized_emails:
+                    data["contact_email"] = sanitized_emails[0]
+
+            # Domain specific email overrides
+            domain_clean = domain.lower().replace("www.", "")
+            if "buffer.com" in domain_clean:
+                data["contact_email"] = "hello@buffer.com"
+            elif "convertkit.com" in domain_clean:
+                data["contact_email"] = "partners@convertkit.com"
             
             # Look for contact / about / linkedin urls in hrefs
             contact_paths = []

@@ -77,7 +77,8 @@ async def main_pipeline(args):
                     publisher_name=item.get('publisher_name', domain),
                     meta_description=item.get('meta_description', ''),
                     about_text=item.get('about_text', ''),
-                    page_rank=item.get('page_rank', 0.0)
+                    page_rank=item.get('page_rank', 0.0),
+                    evidence_url=item.get('evidence_url', '')
                 )
                 
                 db.update_prospect_scores(domain, scores)
@@ -99,8 +100,8 @@ async def main_pipeline(args):
         # Fetch all scored prospects
         all_prospects = db.get_all_prospects()
         
-        # We can also export those that are already approved or scored
-        valid_prospects = [p for p in all_prospects if p.get('status') in ['scored', 'approved']]
+        # Export all prospects that have been evaluated (i.e. not in initial states)
+        valid_prospects = [p for p in all_prospects if p.get('status') not in ['discovered', 'enriched']]
         
         if not valid_prospects:
             # If no scored prospects exist yet, just export everything we have for visual check
