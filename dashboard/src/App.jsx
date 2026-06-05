@@ -97,7 +97,7 @@ function App() {
     }
 
     // Fetch prospects.json
-    fetch('/prospects.json')
+    fetch('./prospects.json')
       .then((res) => {
         if (!res.ok) {
           throw new Error('Local prospects.json not found or could not be loaded.');
